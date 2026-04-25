@@ -26,13 +26,13 @@ Super Kit is a curated, Vietnam-focused fork of [ClaudeKit](https://github.com/a
 ### Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tungpc/claude-super-kit/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Tungbillee/claude-super-kit/main/install.sh | bash
 ```
 
 Or manual:
 
 ```bash
-git clone https://github.com/tungpc/claude-super-kit.git
+git clone https://github.com/Tungbillee/claude-super-kit.git
 cd claude-super-kit
 ./install.sh
 ```
@@ -242,7 +242,7 @@ Pull requests welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
-[MIT](./LICENSE) © tungpc + Claude Super Kit contributors
+[MIT](./LICENSE) © Tungbillee + Claude Super Kit contributors
 
 ---
 
@@ -250,5 +250,5 @@ Pull requests welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 Forked and enhanced from [ClaudeKit](https://github.com/claudekit) by Dexteryy.
 
-**Maintainer:** [@tungpc](https://github.com/tungpc)
+**Maintainer:** [@Tungbillee](https://github.com/Tungbillee)
 **Contact:** sanpema1998@gmail.com

@@ -191,7 +191,7 @@ Be kind. Assume good intent. Sacrifice grammar for concision in reports. Vietnam
 
 ## Questions?
 
-- GitHub Issues: [github.com/tungpc/claude-super-kit/issues](https://github.com/tungpc/claude-super-kit/issues)
+- GitHub Issues: [github.com/Tungbillee/claude-super-kit/issues](https://github.com/Tungbillee/claude-super-kit/issues)
 - Email: sanpema1998@gmail.com
 
 ---

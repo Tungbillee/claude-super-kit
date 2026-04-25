@@ -118,7 +118,7 @@ All commands renamed:
 ## How to Report Issues
 
 If you depended on a removed skill and need help migrating:
-- Open an issue: [github.com/tungpc/claude-super-kit/issues](https://github.com/tungpc/claude-super-kit/issues)
+- Open an issue: [github.com/Tungbillee/claude-super-kit/issues](https://github.com/Tungbillee/claude-super-kit/issues)
 - Email: sanpema1998@gmail.com
 
 ---

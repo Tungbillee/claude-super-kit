@@ -22,7 +22,7 @@ Hướng dẫn cài đặt Claude Super Kit vào hệ thống Claude Code của 
 # Clone Super Kit về máy
 mkdir -p ~/projects
 cd ~/projects
-git clone https://github.com/tungpc/claude-super-kit.git
+git clone https://github.com/Tungbillee/claude-super-kit.git
 cd claude-super-kit
 ```
 
@@ -93,7 +93,7 @@ Mở Claude Code session **mới** (close + open lại để load skills mới),
 
 ```bash
 # One-liner install
-curl -fsSL https://raw.githubusercontent.com/tungpc/claude-super-kit/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Tungbillee/claude-super-kit/main/install.sh | bash
 ```
 
 ⚠️ **Lưu ý:** Cách này clone vào `~/projects/claude-super-kit/` mặc định.
@@ -112,7 +112,7 @@ curl -fsSL https://raw.githubusercontent.com/tungpc/claude-super-kit/main/instal
 # Trong Git Bash
 mkdir -p ~/projects
 cd ~/projects
-git clone https://github.com/tungpc/claude-super-kit.git
+git clone https://github.com/Tungbillee/claude-super-kit.git
 cd claude-super-kit
 chmod +x install.sh
 ./install.sh
@@ -366,8 +366,8 @@ Mở Claude Code session mới, thử các commands:
 
 ## 🔗 Resources
 
-- **GitHub:** https://github.com/tungpc/claude-super-kit
-- **Issues:** https://github.com/tungpc/claude-super-kit/issues
+- **GitHub:** https://github.com/Tungbillee/claude-super-kit
+- **Issues:** https://github.com/Tungbillee/claude-super-kit/issues
 - **Email:** sanpema1998@gmail.com
 
 ---

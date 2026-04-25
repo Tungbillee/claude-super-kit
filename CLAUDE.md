@@ -10,7 +10,7 @@ This file provides guidance to Claude Code when working with the Claude Super Ki
 **Namespace:** `/sk:*`
 **Purpose:** Vietnamese-first ClaudeKit fork with 119+ skills, zero bloat, interactive-by-default
 **License:** MIT
-**Maintainer:** tungpc
+**Maintainer:** Tungbillee
 
 ---
 
@@ -159,7 +159,7 @@ If you're migrating from ClaudeKit:
 
 - Issues: GitHub Issues
 - Email: sanpema1998@gmail.com
-- Maintainer: @tungpc
+- Maintainer: @Tungbillee
 
 ---
 
