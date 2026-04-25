@@ -1,0 +1,45 @@
+name: Lint Skills
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate skill frontmatter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      - name: Run skill validator
+        run: ./scripts/validate-skills.sh
+
+      - name: Check for /ck: references (should be zero)
+        run: |
+          COUNT=$(grep -rE '(/ck:|"ck:)' . --include="*.md" 2>/dev/null | wc -l || echo 0)
+          if [ "$COUNT" -gt 0 ]; then
+            echo "ERROR: Found $COUNT /ck: references (should be 0 after namespace migration)"
+            grep -rE '(/ck:|"ck:)' . --include="*.md" | head -20
+            exit 1
+          fi
+          echo "OK: Zero /ck: references"
+
+      - name: Check skill line counts (max 400)
+        run: |
+          EXCEEDED=0
+          for skill in skills/*/SKILL.md; do
+            LINES=$(wc -l < "$skill")
+            if [ "$LINES" -gt 400 ]; then
+              echo "WARN: $skill has $LINES lines (max 400)"
+              ((EXCEEDED++))
+            fi
+          done
+          if [ "$EXCEEDED" -gt 0 ]; then
+            echo "WARNING: $EXCEEDED skills exceed 400 lines"
+          fi
