@@ -13,6 +13,35 @@ This document tracks skills that have been removed, merged, or replaced in Claud
 
 ---
 
+## Removed in v1.1.0 (2026-04-25)
+
+### Merged: sk:debug + sk:fix → sk:debug-fix
+
+| Old commands | New unified command |
+|---|---|
+| `/sk:debug` (investigation only) | `/sk:debug-fix` |
+| `/sk:fix` (fixing only) | `/sk:debug-fix` |
+
+**Lý do:** User workflow điển hình là debug → fix sequential, gộp 1 command tránh switch context + share state.
+
+**Migration:**
+```
+# Old (2-step):
+/sk:debug "API 500 error"
+/sk:fix
+
+# New (1-step):
+/sk:debug-fix "API 500 error"
+```
+
+`/sk:debug-fix` includes:
+- 7-step workflow: Mode Selection → Scout → Investigate → Diagnose → Complexity Assessment → Fix → Verify+Prevent → Finalize
+- 26 references gộp từ cả 2 skills
+- Scripts: find-polluter.sh
+- LLM Mismatch Warning
+
+---
+
 ## Removed in v0.2.0-cleanup (2026-04-25)
 
 ### Duplicate / Stale skills (deleted entirely)
