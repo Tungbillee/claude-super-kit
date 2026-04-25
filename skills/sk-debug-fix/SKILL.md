@@ -61,21 +61,24 @@ flowchart TD
     B --> C[Step 1: Scout - Understand Context]
     C --> D[Step 2: Investigate - Root Cause Analysis]
     D --> E[Step 3: Diagnose - Confirm Root Cause]
-    E --> F[Step 4: Complexity Assessment]
-    F -->|Simple| G[Quick Workflow]
-    F -->|Moderate| H[Standard Workflow]
-    F -->|Complex| I[Deep Workflow]
-    F -->|Parallel| J[Multi-Agent Fix]
-    G --> K[Step 5: Fix Implementation]
-    H --> K
-    I --> K
-    J --> K
-    K --> L[Step 6: Verify + Prevent]
-    L -->|Pass + Prevention| M[Step 7: Finalize]
-    L -->|Fail, <3 attempts| D
-    L -->|Fail, 3+ attempts| N[Question Architecture]
-    N --> O[Discuss with User]
-    M --> P[Report + Docs + Journal]
+    E --> F[Step 3.5: Present Bug + Get Fix Approval]
+    F -->|Approved| G[Step 4: Complexity Assessment]
+    F -->|Want different approach| D
+    F -->|Cancel| Z[End]
+    G -->|Simple| H[Quick Workflow]
+    G -->|Moderate| I[Standard Workflow]
+    G -->|Complex| J[Deep Workflow]
+    G -->|Parallel| K[Multi-Agent Fix]
+    H --> L[Step 5: Fix Implementation]
+    I --> L
+    J --> L
+    K --> L
+    L --> M[Step 6: Verify + Prevent]
+    M -->|Pass + Prevention| N[Step 7: Finalize]
+    M -->|Fail, <3 attempts| D
+    M -->|Fail, 3+ attempts| O[Question Architecture]
+    O --> P[Discuss with User]
+    N --> Q[Report + Docs + Journal]
 ```
 
 ## Workflow
@@ -133,6 +136,104 @@ See `references/mode-selection.md`.
 See `references/diagnosis-protocol.md`.
 
 **Output:** `✓ Step 3: Diagnosed - Root cause: [summary], Evidence: [brief], Scope: [N files]`
+
+### Step 3.5: Present Bug Report + Get Fix Approval (MANDATORY)
+
+**Purpose:** Trình bày rõ bug + đề xuất hướng fix → user xác nhận trước khi đụng code.
+
+**Skip condition:** Chỉ skip nếu user pass `--auto` flag VÀ confidence score >= 9.5 VÀ 0 critical issues.
+
+#### A. Bug Report (output to user)
+
+Format trình bày rõ ràng:
+
+```markdown
+## 🐛 Bug Report
+
+### Triệu chứng (Symptoms)
+- [Mô tả ngắn gọn cái user thấy]
+- Error message: `<exact error>`
+- File/line: `path/to/file.ts:42`
+
+### Root Cause (Nguyên nhân gốc)
+- [1-2 câu giải thích TẠI SAO bug xảy ra]
+- Evidence: [file, line, code snippet chứng minh]
+
+### Impact (Phạm vi ảnh hưởng)
+- Files affected: [list]
+- Severity: Low / Medium / High / Critical
+- Bug class: [Security / Logic / Performance / Type / Race condition / etc.]
+
+### Why it happened (root cause analysis)
+- [Mechanism: race condition? null check missing? wrong assumption?]
+```
+
+#### B. Fix Approach Proposal
+
+Đề xuất 2-3 hướng fix khả thi qua `AskUserQuestion`:
+
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "Em đã tìm ra root cause. Anh muốn fix theo hướng nào?",
+    header: "Fix Approach",
+    options: [
+      {
+        label: "Approach 1: <recommended> (Recommended)",
+        description: "Quick description + tradeoff. Vd: 'Add null check at API boundary - safe, minimal change, ~3 lines'"
+      },
+      {
+        label: "Approach 2: <alternative>",
+        description: "Alternative tradeoff. Vd: 'Refactor type system - more thorough, ~30 lines, affects 5 files'"
+      },
+      {
+        label: "Approach 3: <conservative>",
+        description: "Conservative option. Vd: 'Defensive validation at all layers - safest, ~10 lines'"
+      }
+    ]
+  }]
+})
+```
+
+#### C. Confirmation Question
+
+Sau khi user chọn approach:
+
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "Xác nhận: tiếp tục fix với approach đã chọn?",
+    header: "Confirm Fix",
+    options: [
+      { label: "Yes, proceed with fix", description: "Bắt đầu Step 4-7" },
+      { label: "Show me the proposed code first", description: "Em viết code preview, anh review trước khi apply" },
+      { label: "Let me investigate more", description: "Quay lại Step 2" },
+      { label: "Cancel", description: "Dừng workflow" }
+    ]
+  }]
+})
+```
+
+#### D. When to Skip
+
+Auto-skip Step 3.5 (đi thẳng qua Step 4) khi:
+- User pass `--auto` AND confidence >= 9.5 AND 0 critical
+- Trivial fix detected (lint, type cast, format)
+- User pass `--no-confirm` flag explicitly
+
+#### E. Anti-patterns
+
+❌ **KHÔNG được làm:**
+- Tự động fix mà không trình bày bug
+- Hỏi vague: "Có muốn fix không?" (phải có 2-3 approach options cụ thể)
+- Bỏ qua bug report (user phải biết bug GÌ + TẠI SAO)
+
+✅ **PHẢI làm:**
+- Bug report đầy đủ 4 sections (Symptoms, Root Cause, Impact, Why)
+- 2-3 approach options với pros/cons rõ ràng
+- Confirmation trước khi đụng code
+
+**Output:** `✓ Step 3.5: User approved approach: [approach name]`
 
 ### Step 4: Complexity Assessment & Task Orchestration
 
@@ -231,10 +332,66 @@ Frontend fix      → frontend-verification.md (Chrome/devtools)
 ✓ Step 1: Scouted - [N] files, [M] deps
 ✓ Step 2: Investigated - [techniques applied]
 ✓ Step 3: Diagnosed - Root cause: [summary]
+✓ Step 3.5: User approved approach: [approach name]
 ✓ Step 4: [Complexity] detected - [workflow] selected
 ✓ Step 5: Fixed - [N] files changed
 ✓ Step 6: Verified + Prevented - [tests added], [guards added]
 ✓ Step 7: Complete - [action taken]
+```
+
+## Example Run (Step 3.5 in action)
+
+```
+User: /sk:debug-fix "Login form crashes when email is empty"
+
+[After Step 1-3 done...]
+
+🐛 Bug Report
+─────────────────────────────────────
+Triệu chứng:
+- TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+- File: src/auth/validate.ts:18
+- Trigger: User submit form with empty email field
+
+Root Cause:
+- validateEmail() không null-check trước khi gọi .toLowerCase()
+- Form không sanitize input - cho phép undefined pass through
+
+Impact:
+- Files: src/auth/validate.ts, src/components/LoginForm.tsx
+- Severity: HIGH (production crash)
+- Bug class: Null safety / Defensive programming
+
+Why it happened:
+- Original dev assumed React Hook Form sẽ default to empty string
+- Nhưng <input> không có defaultValue → undefined initially
+
+═══════════════════════════════════════
+┌──────────────────────────────────────┐
+│ Em đã tìm ra root cause.            │
+│ Anh muốn fix theo hướng nào?         │
+├──────────────────────────────────────┤
+│ [1] Add null check at API boundary  │
+│     (Recommended) ← 3 lines, safe   │
+│ [2] Refactor with TypeScript strict │
+│     30 lines, affects 5 files       │
+│ [3] Defensive validation all layers │
+│     10 lines, safest, more verbose  │
+└──────────────────────────────────────┘
+   ↑↓ navigate · Enter select
+
+User chọn [1]
+
+┌──────────────────────────────────────┐
+│ Xác nhận: tiếp tục fix?             │
+├──────────────────────────────────────┤
+│ [1] Yes, proceed with fix            │
+│ [2] Show me the proposed code first │
+│ [3] Let me investigate more          │
+│ [4] Cancel                           │
+└──────────────────────────────────────┘
+
+User chọn [1] → Step 4 starts
 ```
 
 ## Red Flags
