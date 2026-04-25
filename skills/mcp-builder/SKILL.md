@@ -1,11 +1,12 @@
 ---
 name: sk:mcp-builder
-description: Build MCP servers for LLM-external service integration. Use for FastMCP (Python), MCP SDK (Node/TypeScript), tool design, API integration, resource providers.
+description: Build MCP servers for LLM-external service integration. Use for FastMCP (Python), MCP SDK (Node/TypeScript), tool design, API integration, resource providers. Also covers quick MCP tool execution via Gemini CLI.
 license: Complete terms in LICENSE.txt
-argument-hint: "[service or API to integrate]"
+argument-hint: "[service or API to integrate] OR use [task]"
 metadata:
   author: claudekit
-  version: "1.0.0"
+  version: "1.1.0"
+  last_updated: "2026-04-25"
 ---
 
 # MCP Server Development Guide
@@ -331,6 +332,44 @@ Load these resources as needed during development:
   - Example questions and answers
   - Running an evaluation with the provided scripts
 
+
+---
+
+## Quick MCP Tool Execution (use-mcp)
+
+When you need to **execute** MCP operations (not build a server), use this workflow to preserve context budget.
+
+### Execution Steps
+
+1. **Execute task via Gemini CLI** (using stdin pipe for MCP support):
+   ```bash
+   # IMPORTANT: Use stdin piping, NOT -p flag (deprecated, skips MCP init)
+   # Read model from .claude/.ck.json: gemini.model (default: gemini-3-flash-preview)
+   echo "$ARGUMENTS. Return JSON only per GEMINI.md instructions." | gemini -y -m <gemini.model>
+   ```
+
+2. **Fallback to mcp-manager subagent** (if Gemini CLI unavailable):
+   - Use `mcp-manager` subagent to discover and execute tools
+   - If subagent has issues with scripts, use this skill (`sk:mcp-builder`) to fix them
+   - **DO NOT** create any new scripts
+   - If no suitable tools found, report back and move to next step
+
+### Important Notes
+
+- **MUST use stdin piping** — the deprecated `-p` flag skips MCP initialization
+- Use `-y` flag to auto-approve tool execution
+- **GEMINI.md auto-loaded**: Gemini CLI automatically loads `GEMINI.md` from project root, enforcing JSON-only responses
+- **Parseable output**: `{"server":"name","tool":"name","success":true,"result":<data>,"error":null}`
+
+### Anti-Pattern (DO NOT USE)
+
+```bash
+# BROKEN - deprecated -p flag skips MCP server connections!
+gemini -y -m <gemini.model> -p "..."
+gemini -y -p "..." --model gemini-3-flash-preview
+```
+
+---
 
 ## User Interaction (MANDATORY)
 

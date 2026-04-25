@@ -157,6 +157,52 @@ Human review required at these checkpoints (skipped with `--auto`):
 - `references/review-cycle.md` - Interactive and auto review processes
 - `references/subagent-patterns.md` - Subagent invocation patterns
 
+---
+
+## LLM Mismatch Warning (MANDATORY)
+
+When implementing a phase from `/sk:plan`, **MUST** check if current LLM matches the phase's `suggested_llm`.
+
+### Workflow
+
+1. Read phase file frontmatter
+2. Extract `suggested_llm` field (claude or gpt)
+3. Detect current runtime LLM (Claude Code = claude)
+4. If mismatch → show warning via `AskUserQuestion`
+
+### Warning Pattern
+
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "⚠️ Phase này được suggest dùng GPT, bạn đang dùng Claude. Tiếp tục?",
+    header: "LLM Mismatch",
+    options: [
+      {
+        label: "Yes, tiếp tục với Claude (Recommended)",
+        description: "Claude vẫn xử lý được, chỉ là không tối ưu nhất"
+      },
+      {
+        label: "No, copy prompt để paste vào ChatGPT",
+        description: "Output full prompt cho GPT"
+      },
+      {
+        label: "Skip warning lần này",
+        description: "Không hỏi nữa cho session này"
+      }
+    ]
+  }]
+})
+```
+
+### Skip Cases
+
+Không cần warn nếu:
+- Phase file không có `suggested_llm` field
+- User đã chọn "Skip warning" trong session
+- Plan có flag `--no-llm-warn`
+
+---
 
 ## User Interaction (MANDATORY)
 

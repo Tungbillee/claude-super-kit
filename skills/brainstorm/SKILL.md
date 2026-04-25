@@ -1,11 +1,14 @@
 ---
-name: sk:brainstorm
+name: brainstorm
 description: "Brainstorm solutions with trade-off analysis and brutal honesty. Use for ideation, architecture decisions, technical debates, feature exploration, feasibility assessment, design discussions."
+version: 2.1.0
+author: Claude Super Kit
+type: capability
+namespace: sk
+category: planning
+last_updated: 2026-04-25
 license: MIT
 argument-hint: "[topic or problem]"
-metadata:
-  author: claudekit
-  version: "2.0.0"
 ---
 
 # Brainstorming Skill
@@ -124,6 +127,49 @@ When brainstorming concludes with agreement, create a detailed markdown summary 
 
 **IMPORTANT:** **DO NOT** implement anything, just brainstorm, answer questions and advise.
 
+---
+
+## LLM Recommendation per Idea/Approach (MANDATORY)
+
+When brainstorming produces multiple ideas/approaches, tag each with recommended LLM (Claude vs GPT only).
+
+### Classification Rules (Hardcoded)
+
+**Claude recommended (complex reasoning):**
+- Architecture design, system trade-offs
+- Algorithm/logic deep dives
+- Security considerations, threat modeling
+- Refactoring strategy with many dependencies
+- Code review, root-cause debugging
+- Edge case enumeration
+
+**GPT recommended (pattern-based):**
+- Boilerplate generation (CRUD, forms, configs)
+- Standard pattern application (REST, OAuth flow)
+- Documentation drafting
+- Syntax conversion / migration scripts
+- Template instantiation
+- Quick prototyping with known patterns
+
+### Output Format
+
+When presenting ideas in the design doc, tag each:
+```markdown
+## Approach 1: Microservices
+**Recommended LLM:** Claude (complex distributed systems reasoning)
+**Pros:** ...
+**Cons:** ...
+
+## Approach 2: REST API monolith with standard auth
+**Recommended LLM:** GPT (well-known pattern, fast scaffolding)
+**Pros:** ...
+**Cons:** ...
+```
+
+### Skip if obvious
+If brainstorm topic is clearly one type (e.g., "Refactor auth module" = obviously Claude-territory), skip recommendation to reduce noise.
+
+---
 
 ## User Interaction (MANDATORY)
 

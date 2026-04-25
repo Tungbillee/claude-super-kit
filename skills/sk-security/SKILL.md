@@ -1,12 +1,13 @@
 ---
 name: sk:security
-description: "STRIDE + OWASP-based security audit with optional auto-fix. Scans code for vulnerabilities, categorizes by severity, and can iteratively fix findings using sk:autoresearch pattern."
-argument-hint: "<scope glob or 'full'> [--fix] [--iterations N]"
+description: "STRIDE + OWASP-based security audit with optional auto-fix. Scans code for vulnerabilities, categorizes by severity, and can iteratively fix findings using sk:autoresearch pattern. Includes quick scan mode for lightweight secret/dep/pattern checks."
+argument-hint: "<scope glob or 'full'> [--fix] [--iterations N] [--scan] [--secrets-only] [--deps-only]"
 metadata:
   author: claudekit
   attribution: "Security audit pattern adapted from autoresearch by Udit Goenka (MIT)"
   license: MIT
-  version: "1.0.0"
+  version: "1.1.0"
+  last_updated: "2026-04-25"
 ---
 
 # sk:security — Security Audit
@@ -34,6 +35,9 @@ Runs a structured STRIDE + OWASP security audit on a given scope. Produces a sev
 | Audit only | `/sk:security <scope>` | Scan → categorize → report |
 | Audit + Fix | `/sk:security <scope> --fix` | Scan → categorize → fix iteratively |
 | Bounded fix | `/sk:security <scope> --fix --iterations N` | Limit fix iterations to N |
+| Quick scan | `/sk:security <scope> --scan` | Lightweight grep-based scan (no STRIDE, fast) |
+| Secrets only | `/sk:security --secrets-only` | Only secret/credential detection |
+| Deps only | `/sk:security --deps-only` | Only dependency audit |
 
 ---
 
@@ -143,6 +147,87 @@ When `--fix` is provided, apply fixes iteratively after the audit:
 
 See `references/stride-owasp-checklist.md` for the detailed per-category checklist and secret detection regex patterns.
 
+---
+
+## Quick Scan Mode (--scan / --secrets-only / --deps-only)
+
+Lightweight scanner using grep patterns — no STRIDE analysis, no file-by-file reading. Fast, no external dependencies.
+
+### Workflow
+
+**1. Detect Project Type**
+```
+- package.json → Node.js → run npm audit
+- requirements.txt / pyproject.toml → Python → run pip audit
+- go.mod → Go | Cargo.toml → Rust
+```
+
+**2. Secret Detection** (always runs first)
+
+Use Grep tool with patterns from `references/secret-patterns.md`:
+- API keys/tokens (AWS `AKIA[0-9A-Z]{16}`, GitHub, Stripe, etc.)
+- Private keys and certificates
+- DB connection strings with credentials
+- Hardcoded passwords
+
+**Exclude:** `.env.example`, test fixtures, docs, `node_modules/`, `dist/`
+
+For each match: verify real secret (not placeholder like `YOUR_API_KEY`), rate severity:
+- CRITICAL = exposed prod key
+- HIGH = real credential
+- MEDIUM = possible credential
+
+**3. Dependency Audit**
+```bash
+npm audit --json 2>/dev/null || echo '{"error":"npm audit failed"}'
+pip audit --format json 2>/dev/null || echo '{"error":"pip audit unavailable"}'
+```
+
+**4. Code Pattern Analysis**
+
+Use Grep with patterns from `references/vulnerability-patterns.md`:
+- SQL injection (string concat in queries)
+- XSS (`innerHTML`, `dangerouslySetInnerHTML` without sanitization)
+- Command injection (`exec`/`spawn` with unsanitized input)
+- Path traversal (user input in file paths)
+- Insecure randomness (`Math.random` for security)
+- `eval()` / `Function()` with dynamic input
+
+**5. .env Exposure Check**
+```bash
+git ls-files --error-unmatch .env .env.local .env.production 2>/dev/null
+grep -n "\.env" .gitignore 2>/dev/null
+```
+
+**6. Quick Scan Report**
+
+```markdown
+# Security Scan Report
+**Project:** {name} | **Scanned:** {date} | **Files:** {count}
+
+## Summary
+| Category | Critical | High | Medium | Low |
+|----------|----------|------|--------|-----|
+| Secrets  | X | X | X | - |
+| Deps     | X | X | X | X |
+| Code     | X | X | X | - |
+
+## Findings
+### CRITICAL
+1. **[SECRET]** Hardcoded AWS key in `src/config.js:42`
+   - Pattern: `AKIA[0-9A-Z]{16}`
+   - Fix: Move to environment variable
+```
+
+If `--auto` mode active: save to `{CK_REPORTS_PATH}` or `plans/reports/security-scan-{date}.md`.
+
+### Security Policy (Quick Scan)
+- NEVER output actual secret values — redact to first 4 + last 2 chars
+- NEVER execute secrets or credentials found
+- NEVER modify code automatically — report only with fix suggestions
+- If real credential found: recommend immediate rotation
+
+---
 
 ## User Interaction (MANDATORY)
 

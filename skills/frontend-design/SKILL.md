@@ -1,15 +1,19 @@
 ---
 name: sk:frontend-design
-description: Create polished frontend interfaces from designs/screenshots/videos. Use for web components, 3D experiences, replicating UI designs, quick prototypes, immersive interfaces, avoiding AI slop.
+description: Create polished frontend interfaces from designs/screenshots/videos. Use for web components, 3D experiences, replicating UI designs, quick prototypes, immersive interfaces, avoiding AI slop. Add --pro for agency-grade premium output with curated images.
 license: Complete terms in LICENSE.txt
+argument-hint: "[input] [--pro]"
 metadata:
   author: claudekit
-  version: "1.0.0"
+  version: "1.1.0"
+  last_updated: "2026-04-25"
 ---
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
 
 **IMPORTANT**: MUST follow Design Thinking, Frontend Aesthetics Guidelines, Asset & Analysis References, and Anti-Patterns (AI Slop) sections below. DO NOT skip these rules.
+
+**`--pro` flag**: Activates agency-grade premium mode. Every interface must feel like a $50k+ project. See "Pro Mode (--pro)" section below.
 
 ## Workflow Selection
 
@@ -131,6 +135,56 @@ Strongly prefer alternatives to these LLM defaults. Full rules: `./references/an
 
 Remember: Claude is capable of extraordinary creative work. Commit fully to distinctive visions.
 
+---
+
+## Pro Mode (--pro)
+
+When `--pro` is passed, operate as a world-class creative frontend engineer AND visual director. No compromises.
+
+### Bold Aesthetic Directions (commit 100% to one)
+
+| Style | Core Keywords | Palette | Signature |
+|-------|--------------|---------|-----------|
+| Minimalism / Swiss | clean, grid-based, generous whitespace, typography-first | Monochrome + bold accent | Razor hierarchy, subtle hover lifts, micro-animations |
+| Neumorphism | soft ui, embossed, concave/convex, monochromatic | Single pastel + light/dark variations | Multi-layer soft shadows, press/release animations |
+| Glassmorphism | frosted glass, translucent, vibrant backdrop, blur | Aurora/sunset + semi-transparent whites | `backdrop-filter: blur()`, glowing borders, floating layers |
+| Brutalism | raw, asymmetric, high contrast, intentionally bold | Harsh primaries, black/white, neon | Huge bold text, exposed grid, "broken" aesthetic |
+| Claymorphism | clay, chunky 3D, bubbly, double shadows, pastel | Candy pastels, soft gradients | Inner+outer shadows, squishy press effects |
+| Aurora / Mesh | aurora, northern lights, flowing | Teal→purple→pink blends | Animated CSS/SVG mesh, layered translucency |
+| Retro-Futurism | vaporwave, crt scanlines, neon glow, glitch | Neon cyan/magenta on deep black | Scanlines, chromatic aberration, long glowing shadows |
+| 3D Hyperrealism | realistic textures, skeuomorphic, WebGL, tactile | Rich metallics, deep gradients | Three.js / CSS 3D, physics-based motion |
+| Dark OLED Luxury | deep black, oled-optimized, cinematic | `#000000` + vibrant accents | Minimal glows, velvet textures, cinematic entrances |
+| Organic / Biomorphic | fluid shapes, blobs, curved, nature-inspired | Earthy or muted pastels | SVG morphing, gooey effects, irregular borders |
+
+### Pro Non-Negotiable Rules
+- NEVER use Inter, Roboto, Arial, system-ui — use characterful fonts (GT America, Reckless, Neue Machina, Clash Display, Satoshi, etc.)
+- CSS custom properties everywhere
+- One dominant color + sharp accent(s)
+- At least one unforgettable signature detail (grain, custom cursor, animated mesh, diagonal split)
+- Break the centered-card grid: asymmetry, overlap, diagonal flow
+- Full WCAG AA/AAA, focus styles, semantic HTML, prefers-reduced-motion
+
+### Perfect Images System (Pro Mode)
+
+When design needs images (hero, background, cards, illustrations):
+
+**Real-world photography** (people, office, nature, products, textures):
+- Use ONLY real Unsplash → Pexels → Pixabay photos
+- Provide DIRECT image URL ending in `.jpg`/`.png` with `?w=1920&q=80`
+- Deliver ready `<img>` tag + SEO alt text
+- Example: `<img src="https://images.unsplash.com/photo-1708282114148-9e0e8d0f2f83?w=1920&q=80" alt="Developer focused on code in dark luxury studio">`
+
+**Hero images, custom backgrounds, conceptual scenes, illustrations**:
+- Write a hyper-detailed, copy-paste-ready prompt for Flux / Midjourney v6 / Ideogram
+- Wrap exactly:
+  ```
+  [IMAGE PROMPT START]
+  Cinematic photograph of [exact scene matching design 100%], dramatic rim lighting, ultra-realistic, perfect composition, 16:9 --ar 16:9 --v 6 --q 2 --stylize 650
+  [IMAGE PROMPT END]
+  ```
+- Never invent fake URLs or low-effort placeholder images
+
+---
 
 ## User Interaction (MANDATORY)
 

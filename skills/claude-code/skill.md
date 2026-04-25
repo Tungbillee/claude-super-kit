@@ -1,6 +1,14 @@
 ---
 name: claude-code
-description: Activate when users ask about Claude Code installation, slash commands (/cook, /plan, /fix, /test, /docs, /design, /git), creating/managing Agent Skills, configuring MCP servers, setting up hooks/plugins, IDE integration (VS Code, JetBrains), CI/CD workflows, enterprise deployment (SSO, RBAC, sandboxing), troubleshooting authentication/performance issues, or advanced features (extended thinking, caching, checkpointing).
+description: Documentation skill for Claude Code CLI - installation, slash commands (/cook, /plan, /fix, /test, /docs, /design, /git), creating/managing Agent Skills, configuring MCP servers, setting up hooks/plugins, IDE integration (VS Code, JetBrains), CI/CD workflows, enterprise deployment (SSO, RBAC, sandboxing), troubleshooting authentication/performance issues, advanced features (extended thinking, caching, checkpointing).
+version: 1.0.0
+author: Claude Super Kit
+type: documentation
+namespace: sk
+category: cli-tool-docs
+scope: documentation-only
+last_updated: 2026-04-25
+note: This is a docs/reference skill for Claude Code itself - NOT a code review skill (use sk-review for that)
 ---
 
 # Claude Code

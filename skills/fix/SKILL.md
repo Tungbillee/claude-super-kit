@@ -211,6 +211,41 @@ Load as needed:
 - `references/workflow-types.md` - TypeScript type errors
 - `references/workflow-ui.md` - Visual/UI issues (requires design skills)
 
+---
+
+## LLM Mismatch Warning (MANDATORY)
+
+Khi fix bug trong phase đã có `suggested_llm`, MUST warn nếu mismatch.
+
+### Workflow
+
+1. Read related phase file frontmatter (nếu có)
+2. Extract `suggested_llm` field
+3. Compare với current runtime LLM
+4. If mismatch → AskUserQuestion warning (same pattern as cook)
+
+### Warning Pattern
+
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "⚠️ Phase này được suggest dùng GPT, đang fix với Claude. Tiếp tục?",
+    header: "LLM Mismatch",
+    options: [
+      { label: "Yes, fix với Claude (Recommended)", description: "Claude xử lý debug tốt" },
+      { label: "Skip warning", description: "Không hỏi nữa session này" }
+    ]
+  }]
+})
+```
+
+### Notes
+
+- Bug fixing thường complex → Claude is preferred default
+- Even if phase says GPT, fix tasks often warrant Claude (root-cause analysis)
+- This warning is informational only
+
+---
 
 ## User Interaction (MANDATORY)
 

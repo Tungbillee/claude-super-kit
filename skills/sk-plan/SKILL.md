@@ -1,11 +1,14 @@
 ---
-name: sk:plan
+name: sk-plan
 description: "Plan implementations, design architectures, create technical roadmaps with detailed phases. Use for feature planning, system design, solution architecture, implementation strategy, phase documentation."
-argument-hint: "[task] OR [archive|red-team|validate]"
+version: 2.0.0
+author: Claude Super Kit
+type: capability
+namespace: sk
+category: planning
+last_updated: 2026-04-25
 license: MIT
-metadata:
-  author: claudekit
-  version: "1.0.0"
+argument-hint: "[task] OR [archive|red-team|validate]"
 ---
 
 # Planning
@@ -197,6 +200,121 @@ Reports: Active plans → plan-specific path. Suggested → default path.
 
 **Remember:** Plan quality determines implementation success. Be comprehensive and consider all solution aspects.
 
+---
+
+## LLM Assignment Engine (MANDATORY)
+
+Sau khi tạo phases + tasks, **BẮT BUỘC** assign LLM phù hợp cho từng phase và task.
+
+**Chỉ 2 providers:** Claude vs GPT (không suggest provider khác).
+
+### Workflow
+
+1. Tạo phases + tasks như bình thường
+2. Cho mỗi phase, classify task type → suggest LLM
+3. Cho mỗi task trong phase, tag inline `[llm: claude]` hoặc `[llm: gpt]`
+4. Final confirmation via `AskUserQuestion` (4 options)
+5. Save user's choice → frontmatter của phase files
+
+### Classification Rules (Hardcoded)
+
+#### Claude recommended (complex reasoning)
+
+Keywords/patterns triggering Claude:
+- `architecture`, `design`, `refactor` (with deps)
+- `algorithm`, `optimization`, `performance critical`
+- `security`, `threat model`, `audit`
+- `debug`, `root cause`, `trace`
+- `review`, `analysis`, `evaluation`
+- `migration` (complex, with breaking changes)
+- `integration` (multiple systems)
+
+#### GPT recommended (pattern-based)
+
+Keywords/patterns triggering GPT:
+- `boilerplate`, `scaffold`, `template`
+- `CRUD`, `REST endpoint`, `form`
+- `config`, `setup`, `init`
+- `migration` (simple, schema-only)
+- `documentation`, `docstring`, `readme`
+- `convert`, `format`, `lint fix`
+- `test scaffolding` (write basic tests)
+- `i18n strings`, `translation`
+
+#### Default fallback
+Ambiguous tasks → Claude (safer for complex unknowns).
+
+### Phase File Frontmatter
+
+Each `phase-XX.md` MUST include:
+
+```yaml
+---
+phase: 1
+name: Setup database schema
+suggested_llm: claude
+llm_reason: Complex schema design with multiple relationships
+---
+```
+
+### Task Inline Tagging
+
+Inside phase file todo list:
+
+```markdown
+## Todo
+- [ ] Task 1.1: Design ERD relationships `[llm: claude]` - Complex deps
+- [ ] Task 1.2: Write migration SQL `[llm: gpt]` - Standard pattern
+- [ ] Task 1.3: Add indexes `[llm: gpt]` - Boilerplate optimization
+- [ ] Task 1.4: Audit security implications `[llm: claude]` - Threat analysis
+```
+
+### Final Confirmation (REQUIRED)
+
+After plan generation, MUST ask user via `AskUserQuestion`:
+
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "Xác nhận LLM assignment cho plan này?",
+    header: "LLM Confirm",
+    options: [
+      {
+        label: "OK, dùng đúng suggest (Recommended)",
+        description: "Claude: X tasks, GPT: Y tasks"
+      },
+      {
+        label: "Tất cả dùng Claude",
+        description: "Override - dùng Claude cho mọi task"
+      },
+      {
+        label: "Tất cả dùng GPT",
+        description: "Override - dùng GPT cho mọi task"
+      },
+      {
+        label: "Tôi sẽ chọn manually từng task",
+        description: "Skip auto-assignment, để tôi tự edit phase files"
+      }
+    ]
+  }]
+})
+```
+
+### Rationale Comments
+
+Always include `llm_reason` field explaining WHY:
+- ✅ `llm_reason: "Complex distributed system trade-offs"`
+- ✅ `llm_reason: "Standard REST CRUD pattern"`
+- ❌ `llm_reason: "It just is"`
+
+### Skip Cases
+
+Plans có thể skip LLM assignment khi:
+- Plan chỉ có 1 phase với 1 task trivial
+- User explicit pass `--no-llm-suggest` argument
+- Plan type là `archive`/`red-team`/`validate` (không phải implementation plan)
+
+---
 
 ## User Interaction (MANDATORY)
 

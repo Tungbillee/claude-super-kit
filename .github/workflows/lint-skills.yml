@@ -20,15 +20,17 @@ jobs:
       - name: Run skill validator
         run: ./scripts/validate-skills.sh
 
-      - name: Check for /ck: references (should be zero)
+      - name: Check for /ck: references in skills/ and commands/ (should be zero)
         run: |
-          COUNT=$(grep -rE '(/ck:|"ck:)' . --include="*.md" 2>/dev/null | wc -l || echo 0)
+          # Only check skills/, commands/, rules/ - NOT meta docs (CHANGELOG, DEPRECATIONS, etc)
+          COUNT=$(grep -rE '(/ck:|"ck:)' skills/ commands/ rules/ workflows/ --include="*.md" 2>/dev/null | wc -l || echo 0)
           if [ "$COUNT" -gt 0 ]; then
-            echo "ERROR: Found $COUNT /ck: references (should be 0 after namespace migration)"
-            grep -rE '(/ck:|"ck:)' . --include="*.md" | head -20
+            echo "ERROR: Found $COUNT /ck: references in skills/commands/rules"
+            grep -rE '(/ck:|"ck:)' skills/ commands/ rules/ workflows/ --include="*.md" | head -20
             exit 1
           fi
-          echo "OK: Zero /ck: references"
+          echo "OK: Zero /ck: references in skill/command/rule files"
+          echo "Note: Meta docs (CHANGELOG, DEPRECATIONS, README) may keep /ck: for migration history"
 
       - name: Check skill line counts (max 400)
         run: |

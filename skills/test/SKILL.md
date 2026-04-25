@@ -1,10 +1,11 @@
 ---
 name: sk:test
-description: "Run unit, integration, e2e, and UI tests. Use for test execution, coverage analysis, build verification, visual regression, and QA reports."
-argument-hint: "[context] OR ui [url]"
+description: "Run unit, integration, e2e, UI, performance, accessibility, and visual regression tests. Use for test execution, coverage analysis, build verification, Playwright/k6/axe-core, and QA reports."
+argument-hint: "[context] OR ui [url] OR perf [url] OR a11y [url]"
 metadata:
   author: claudekit
-  version: "1.0.0"
+  version: "1.1.0"
+  last_updated: "2026-04-25"
 ---
 
 # Testing & Quality Assurance
@@ -82,11 +83,108 @@ Reports        → report-format.md
 ## Tools Integration
 
 - **Test runners**: Jest, Vitest, Mocha, pytest, go test, cargo test, flutter test
+- **E2E / Browser**: Playwright (E2E, component testing, visual regression)
 - **Coverage**: Istanbul/c8/nyc, pytest-cov, go cover
-- **Browser**: `sk:chrome-devtools` skill for UI testing (screenshots, ARIA, console, network)
+- **Browser automation**: `sk:chrome-devtools` skill for UI testing (screenshots, ARIA, console, network)
 - **Analysis**: `sk:ai-multimodal` skill for screenshot analysis
 - **Debugging**: `sk:debug` skill when tests reveal bugs requiring investigation
 - **Thinking**: `sk:sequential-thinking` skill for complex test failure analysis
+
+## Testing Strategy
+
+| Model | Structure | Best For |
+|-------|-----------|----------|
+| Pyramid | Unit 70% > Integration 20% > E2E 10% | Monoliths |
+| Trophy | Integration-heavy | Modern SPAs |
+| Honeycomb | Contract-centric | Microservices |
+
+→ `./references/testing-pyramid-strategy.md`
+
+## Performance Testing (k6, Artillery)
+
+Load and performance testing for APIs and web apps.
+
+```bash
+k6 run load-test.js                    # Basic load test
+k6 run --vus 50 --duration 30s test.js # 50 virtual users, 30s
+npx lighthouse https://example.com     # Lighthouse performance audit
+npx lhci autorun                       # Lighthouse CI
+```
+
+Key metrics: LCP, CLS, INP (Core Web Vitals), throughput, p95/p99 latency.
+
+→ `./references/load-testing-k6.md` | `./references/performance-core-web-vitals.md`
+
+## Accessibility Testing (axe-core, WCAG)
+
+Automated and manual a11y auditing to WCAG 2.1 AA/AAA standards.
+
+```bash
+npx @axe-core/cli https://example.com  # CLI audit
+npx playwright test --project=a11y     # Playwright + axe integration
+```
+
+Checks: keyboard navigation, ARIA roles, color contrast, screen reader compatibility, focus management.
+
+→ `./references/accessibility-testing.md`
+
+## Visual Regression (Percy, Chromatic)
+
+Screenshot comparison testing to catch unintended visual changes.
+
+```bash
+npx playwright test --update-snapshots  # Update baseline screenshots
+# Percy: percy exec -- playwright test
+# Chromatic: npx chromatic --project-token=<token>
+```
+
+Workflow: baseline capture → code change → comparison → approve/reject diffs.
+
+→ `./references/visual-regression.md`
+
+## Cross-Browser & Mobile
+
+→ `./references/cross-browser-checklist.md` | `./references/mobile-gesture-testing.md`
+
+## E2E with Playwright
+
+```bash
+npx playwright test              # Run all E2E
+npx playwright test --ui         # Interactive UI mode
+npx playwright test --debug      # Debug mode
+node ./references/scripts/init-playwright.js  # Project setup
+```
+
+→ `./references/e2e-testing-playwright.md` | `./references/playwright-component-testing.md`
+
+## CI/CD Integration
+
+```yaml
+jobs:
+  test:
+    steps:
+      - run: npm run test:unit       # Gate 1: Fast fail
+      - run: npm run test:e2e        # Gate 2: After unit pass
+      - run: npm run test:a11y       # Accessibility
+      - run: npx lhci autorun        # Performance
+```
+
+→ `./references/ci-cd-testing-workflows.md`
+
+## Extended References
+
+| Topic | Reference |
+|-------|-----------|
+| Unit/Integration | `./references/unit-integration-testing.md` |
+| E2E Playwright | `./references/e2e-testing-playwright.md` |
+| Component testing | `./references/component-testing.md` |
+| Test data/fixtures | `./references/test-data-management.md` |
+| Database testing | `./references/database-testing.md` |
+| Contract testing | `./references/contract-testing.md` |
+| API testing | `./references/api-testing.md` |
+| Security testing | `./references/security-testing-overview.md` |
+| Flakiness | `./references/test-flakiness-mitigation.md` |
+| Pre-release | `./references/pre-release-checklist.md` |
 
 ## Quality Standards
 
