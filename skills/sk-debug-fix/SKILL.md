@@ -170,7 +170,7 @@ Format trình bày rõ ràng:
 
 #### B. Fix Approach Proposal
 
-Đề xuất 2-3 hướng fix khả thi qua `AskUserQuestion`:
+Đề xuất 3 hướng fix + 1 option auto-decide qua `AskUserQuestion`:
 
 ```javascript
 AskUserQuestion({
@@ -189,30 +189,55 @@ AskUserQuestion({
       {
         label: "Approach 3: <conservative>",
         description: "Conservative option. Vd: 'Defensive validation at all layers - safest, ~10 lines'"
+      },
+      {
+        label: "🤖 Em tự đề xuất - chọn hộ anh",
+        description: "Skill tự pick approach tối ưu nhất theo context (default: Recommended). Phù hợp khi anh không chắc chọn cái nào."
       }
     ]
   }]
 })
 ```
 
+**Logic khi user chọn "🤖 Em tự đề xuất":**
+1. Default chọn approach Recommended (Approach 1)
+2. Override rules:
+   - Nếu codebase có `tsconfig strict: true` → ưu tiên Approach 2 (TypeScript strict)
+   - Nếu file đụng vào > 5 → ưu tiên Approach 1 (minimal)
+   - Nếu severity Critical / Security → ưu tiên Approach 3 (Defensive)
+   - Nếu phase frontmatter có `suggested_llm: gpt` (boilerplate) → Approach 1 (simplest)
+3. **Show user lựa chọn cuối cùng** trước khi proceed:
+   ```
+   ✓ Em đã chọn: Approach 1 (Null check at API boundary)
+   Lý do: Minimal change, safe, fits Quick mode
+   → Tiếp tục Step 4...
+   ```
+4. Skip Step 3.5.C (confirmation), đi thẳng Step 4
+
 #### C. Confirmation Question
 
-Sau khi user chọn approach:
+Sau khi user chọn approach (KHÔNG phải auto-decide):
 
 ```javascript
 AskUserQuestion({
   questions: [{
-    question: "Xác nhận: tiếp tục fix với approach đã chọn?",
+    question: "Xác nhận cách fix này: <selected approach name>?",
     header: "Confirm Fix",
     options: [
-      { label: "Yes, proceed with fix", description: "Bắt đầu Step 4-7" },
+      { label: "Yes, proceed with fix (Recommended)", description: "Bắt đầu Step 4-7" },
       { label: "Show me the proposed code first", description: "Em viết code preview, anh review trước khi apply" },
-      { label: "Let me investigate more", description: "Quay lại Step 2" },
-      { label: "Cancel", description: "Dừng workflow" }
+      { label: "🤖 Em tự xử nốt - không cần hỏi nữa", description: "Skip mọi confirmation tiếp theo trong session này" },
+      { label: "Cancel - investigate more", description: "Quay lại Step 2 hoặc dừng" }
     ]
   }]
 })
 ```
+
+**Logic option "🤖 Em tự xử nốt":**
+- Set session flag `auto_proceed = true`
+- Bypass mọi confirmation popup tiếp theo (Step 5, 6, 7)
+- Vẫn show output markers để user theo dõi
+- User vẫn có thể `Ctrl+C` để dừng nếu cần
 
 #### D. When to Skip
 
@@ -377,21 +402,46 @@ Why it happened:
 │     30 lines, affects 5 files       │
 │ [3] Defensive validation all layers │
 │     10 lines, safest, more verbose  │
+│ [4] 🤖 Em tự đề xuất - chọn hộ anh  │
+│     Skill tự pick best option       │
 └──────────────────────────────────────┘
    ↑↓ navigate · Enter select
 
+────────────────────────────────────────
+TRƯỜNG HỢP 1: User chọn cụ thể
+────────────────────────────────────────
 User chọn [1]
 
 ┌──────────────────────────────────────┐
-│ Xác nhận: tiếp tục fix?             │
+│ Xác nhận cách fix này:               │
+│ "Null check at API boundary"?        │
 ├──────────────────────────────────────┤
-│ [1] Yes, proceed with fix            │
+│ [1] Yes, proceed (Recommended)       │
 │ [2] Show me the proposed code first │
-│ [3] Let me investigate more          │
-│ [4] Cancel                           │
+│ [3] 🤖 Em tự xử nốt - không hỏi nữa │
+│ [4] Cancel - investigate more        │
 └──────────────────────────────────────┘
 
-User chọn [1] → Step 4 starts
+User chọn [1] → Step 4 starts (sẽ hỏi tiếp ở Step 5,6,7)
+User chọn [3] → Step 4 starts với auto_proceed=true (skill tự xử hết)
+
+────────────────────────────────────────
+TRƯỜNG HỢP 2: User không biết chọn cách nào
+────────────────────────────────────────
+User chọn [4] "🤖 Em tự đề xuất"
+
+Skill auto-decide based on context:
+  - tsconfig strict? → No
+  - Files affected? → 2 (< 5)
+  - Severity? → HIGH (production crash, not Critical security)
+  → Pick Approach 1 (minimal, safe, fits Quick mode)
+
+Output:
+  ✓ Em đã chọn: Approach 1 (Null check at API boundary)
+  Lý do: Minimal change, safe, severity HIGH (not critical)
+  → Tiếp tục Step 4...
+
+(SKIP confirmation popup, đi thẳng Step 4)
 ```
 
 ## Red Flags
