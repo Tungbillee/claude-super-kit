@@ -1,5 +1,5 @@
 ---
-name: ai-multimodal
+name: sk:ai-multimodal
 description: Analyze images/audio/video with Gemini API (better vision than Claude). Generate images (Imagen 4, Nano Banana 2, MiniMax), videos (Veo 3, Hailuo), speech (MiniMax TTS), music (MiniMax). Use for vision analysis, transcription, OCR, design extraction, multimodal AI.
 version: 1.0.0
 author: Claude Super Kit

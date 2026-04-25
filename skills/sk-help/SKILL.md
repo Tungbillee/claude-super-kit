@@ -1,5 +1,5 @@
 ---
-name: sk-help
+name: sk:help
 description: Claude Super Kit usage guide - just type naturally and skill will route to relevant capability
 version: 1.0.0
 author: Claude Super Kit

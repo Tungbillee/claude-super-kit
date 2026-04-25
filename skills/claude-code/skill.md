@@ -1,5 +1,5 @@
 ---
-name: claude-code
+name: sk:claude-code
 description: Documentation skill for Claude Code CLI - installation, slash commands (/cook, /plan, /fix, /test, /docs, /design, /git), creating/managing Agent Skills, configuring MCP servers, setting up hooks/plugins, IDE integration (VS Code, JetBrains), CI/CD workflows, enterprise deployment (SSO, RBAC, sandboxing), troubleshooting authentication/performance issues, advanced features (extended thinking, caching, checkpointing).
 version: 1.0.0
 author: Claude Super Kit

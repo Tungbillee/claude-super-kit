@@ -1,5 +1,5 @@
 ---
-name: sk-plan
+name: sk:plan
 description: "Plan implementations, design architectures, create technical roadmaps with detailed phases. Use for feature planning, system design, solution architecture, implementation strategy, phase documentation."
 version: 2.0.0
 author: Claude Super Kit
